@@ -47,7 +47,7 @@ function init (converter, defaultAttributes) {
       name + '=' + converter.write(value, name) + stringifiedAttributes)
   }
 
-  function get (name) {
+  function get (name, defaultValue) {
     if (typeof document === 'undefined' || (arguments.length && !name)) {
       return
     }
@@ -64,13 +64,17 @@ function init (converter, defaultAttributes) {
         var found = decodeURIComponent(parts[0])
         jar[found] = converter.read(value, found)
 
-        if (name === found) {
+        if (name && name === found) {
           break
         }
       } catch (e) {}
     }
 
-    return name ? jar[name] : jar
+    if (!name)
+      return jar
+    if (typeof jar[name] === undefined && defaultValue !== undefined)
+      return defaultValue
+    return jar[name]
   }
 
   return Object.create(
